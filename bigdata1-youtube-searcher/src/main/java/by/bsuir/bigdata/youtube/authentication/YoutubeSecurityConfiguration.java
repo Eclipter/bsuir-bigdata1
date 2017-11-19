@@ -29,6 +29,7 @@ import java.util.List;
 @Configuration
 public class YoutubeSecurityConfiguration {
 
+    //TODO: deal with application.properties injection
 //    @Value("${youtube.datastore.credentials.filename}")
     private String keysFileName = "client_secret.json";
 
