@@ -20,7 +20,6 @@ public class YoutubeSearchingServiceImpl implements YoutubeSearchingService {
 
     private static final Long MAX_SEARCH_RESULTS = 50L;
     private static final String TARGET_REGION_CODE = "RU";
-    public static final String DOWNLOAD_PATH = System.getProperty("user.home") + "/youtube_download/input.txt";
 
     @Autowired
     private YouTube youTubeDataAccessor;
