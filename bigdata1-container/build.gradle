@@ -1,0 +1,33 @@
+group = group
+version = version
+
+apply plugin: 'java'
+apply plugin: 'spring-boot'
+apply plugin: 'idea'
+
+sourceCompatibility = 1.8
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+bootRun{
+    addResources = true
+}
+
+dependencies {
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter'
+
+    compile project(':bigdata1-youtube-searcher')
+
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
