@@ -3,6 +3,7 @@ package by.bsuir.bigdata.youtube.service.impl;
 import by.bsuir.bigdata.youtube.exception.YoutubeException;
 import by.bsuir.bigdata.youtube.model.VideoSearchResult;
 import by.bsuir.bigdata.youtube.service.YoutubeSearchingService;
+import com.google.api.client.util.DateTime;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.Channel;
 import com.google.api.services.youtube.model.ChannelListResponse;
@@ -61,6 +62,26 @@ public class YoutubeSearchingServiceImpl implements YoutubeSearchingService {
                     .collect(Collectors.toList());
         } catch (IOException e) {
             throw new YoutubeException("Error while retrieving most popular videos", e);
+        }
+    }
+
+    @Override
+    public List<VideoSearchResult> searchRelated(String videoTitle, String uploaderName, DateTime effectiveDate) {
+        try {
+            YouTube.Search.List request = youTubeDataAccessor.search().list("snippet");
+            request.setQ(videoTitle + " -" + uploaderName);
+            request.setType("video");
+            request.setOrder("date");
+            request.setPublishedAfter(effectiveDate);
+            request.setMaxResults(MAX_SEARCH_RESULTS);
+
+            return request.execute().getItems().stream().map(video ->
+                    new VideoSearchResult(video.getSnippet().getChannelTitle(),
+                            video.getSnippet().getTitle(),
+                            video.getSnippet().getPublishedAt()))
+                    .collect(Collectors.toList());
+        } catch (IOException e) {
+            throw new YoutubeException("Error while searching videos", e);
         }
     }
 }
