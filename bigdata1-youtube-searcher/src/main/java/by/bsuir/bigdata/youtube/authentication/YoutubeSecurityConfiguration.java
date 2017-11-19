@@ -13,6 +13,7 @@ import com.google.api.client.util.Value;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.YouTubeScopes;
+import com.google.api.services.youtubeAnalytics.YouTubeAnalytics;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.security.GeneralSecurityException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -45,13 +47,21 @@ public class YoutubeSecurityConfiguration {
     @Autowired
     private ResourceLoader resourceLoader;
 
-    private List<String> youtubeScopes = Collections.singletonList(YouTubeScopes.YOUTUBE_READONLY);
+    private List<String> youtubeScopes = Arrays.asList(YouTubeScopes.YOUTUBE_READONLY);
 
     @Bean
     public YouTube youTubeAccessor() {
         Credential credential = authorize();
         return new YouTube.Builder(trustedTransport(), JacksonFactory.getDefaultInstance(), credential)
                 .setApplicationName(appName)
+                .build();
+    }
+
+    @Bean
+    public YouTubeAnalytics youTubeAnalyticsAccessor() {
+        Credential credential = authorize();
+        return new YouTubeAnalytics.Builder(trustedTransport(), JacksonFactory.getDefaultInstance(), credential)
+                .setApplicationName("Analytics API App")
                 .build();
     }
 
