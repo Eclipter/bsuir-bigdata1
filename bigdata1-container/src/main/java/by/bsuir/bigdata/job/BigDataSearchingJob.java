@@ -25,8 +25,14 @@ public class BigDataSearchingJob {
         log.info("The time is now {}", dateFormat.format(new Date()));
     }
 
-    @Scheduled(fixedRate = 10000)
+//    @Scheduled(fixedRate = 10000)
     public void search() {
-        log.info(youtubeSearcher.search());
+        log.info(youtubeSearcher.simpleSearch());
+    }
+
+    @Scheduled(fixedRate = 30000)
+    public void downloadMostPopular() {
+        youtubeSearcher.searchMostPopular();
+        log.info("Successfully downloaded the results");
     }
 }
