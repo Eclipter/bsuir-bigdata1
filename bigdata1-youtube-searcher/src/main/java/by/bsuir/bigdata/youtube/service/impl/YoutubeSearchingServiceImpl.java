@@ -1,7 +1,7 @@
 package by.bsuir.bigdata.youtube.service.impl;
 
 import by.bsuir.bigdata.youtube.exception.YoutubeException;
-import by.bsuir.bigdata.youtube.service.YoutubeSearcher;
+import by.bsuir.bigdata.youtube.service.YoutubeSearchingService;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.Channel;
 import com.google.api.services.youtube.model.ChannelListResponse;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 
 @Service
-public class YoutubeSearcherImpl implements YoutubeSearcher {
+public class YoutubeSearchingServiceImpl implements YoutubeSearchingService {
 
     private static final Long MAX_SEARCH_RESULTS = 50L;
     private static final String TARGET_REGION_CODE = "RU";

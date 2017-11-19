@@ -1,6 +1,6 @@
 package by.bsuir.bigdata.job;
 
-import by.bsuir.bigdata.youtube.service.YoutubeSearcher;
+import by.bsuir.bigdata.youtube.service.YoutubeSearchingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,21 +18,16 @@ public class BigDataSearchingJob {
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
     @Autowired
-    private YoutubeSearcher youtubeSearcher;
+    private YoutubeSearchingService youtubeSearchingService;
 
     @Scheduled(fixedRate = 5000)
     public void reportCurrentTime() {
         log.info("The time is now {}", dateFormat.format(new Date()));
     }
 
-//    @Scheduled(fixedRate = 10000)
-    public void search() {
-        log.info(youtubeSearcher.simpleSearch());
-    }
-
     @Scheduled(fixedRate = 30000)
     public void downloadMostPopular() {
-        youtubeSearcher.searchMostPopular();
+        youtubeSearchingService.searchMostPopular();
         log.info("Successfully downloaded the results");
     }
 }
