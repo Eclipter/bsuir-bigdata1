@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface YoutubeSearchingService {
 
-    public String simpleSearch();
+    String simpleSearch();
 
     List<VideoSearchResult> searchMostPopular();
 
