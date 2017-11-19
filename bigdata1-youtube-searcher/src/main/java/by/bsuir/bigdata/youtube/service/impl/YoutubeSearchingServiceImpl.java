@@ -1,16 +1,18 @@
 package by.bsuir.bigdata.youtube.service.impl;
 
 import by.bsuir.bigdata.youtube.exception.YoutubeException;
+import by.bsuir.bigdata.youtube.model.VideoSearchResult;
 import by.bsuir.bigdata.youtube.service.YoutubeSearchingService;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.Channel;
 import com.google.api.services.youtube.model.ChannelListResponse;
-import com.google.api.services.youtube.model.VideoListResponse;
 import com.google.api.services.youtubeAnalytics.YouTubeAnalytics;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class YoutubeSearchingServiceImpl implements YoutubeSearchingService {
@@ -45,14 +47,18 @@ public class YoutubeSearchingServiceImpl implements YoutubeSearchingService {
     }
 
     @Override
-    public VideoListResponse searchMostPopular() {
+    public List<VideoSearchResult> searchMostPopular() {
         try {
-            YouTube.Videos.List request = youTubeDataAccessor.videos().list("snippet,contentDetails,statistics");
+            YouTube.Videos.List request = youTubeDataAccessor.videos().list("snippet");
             request.setChart("mostPopular");
             request.setMaxResults(MAX_SEARCH_RESULTS);
             request.setRegionCode(TARGET_REGION_CODE);
 
-            return request.execute();
+            return request.execute().getItems().stream().map(video ->
+                    new VideoSearchResult(video.getSnippet().getChannelTitle(),
+                            video.getSnippet().getTitle(),
+                            video.getSnippet().getPublishedAt().toString()))
+                    .collect(Collectors.toList());
         } catch (IOException e) {
             throw new YoutubeException("Error while retrieving most popular videos", e);
         }

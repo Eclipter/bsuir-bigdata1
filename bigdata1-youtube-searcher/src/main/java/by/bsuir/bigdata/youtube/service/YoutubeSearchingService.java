@@ -1,10 +1,12 @@
 package by.bsuir.bigdata.youtube.service;
 
-import com.google.api.services.youtube.model.VideoListResponse;
+import by.bsuir.bigdata.youtube.model.VideoSearchResult;
+
+import java.util.List;
 
 public interface YoutubeSearchingService {
 
     public String simpleSearch();
 
-    VideoListResponse searchMostPopular();
+    List<VideoSearchResult> searchMostPopular();
 }
