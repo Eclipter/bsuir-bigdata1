@@ -1,12 +1,14 @@
 package by.bsuir.bigdata.youtube.model;
 
+import com.google.api.client.util.DateTime;
+
 public class VideoSearchResult {
 
     private String channelName;
     private String videoName;
-    private String uploadDate;
+    private DateTime uploadDate;
 
-    public VideoSearchResult(String channelName, String videoName, String uploadDate) {
+    public VideoSearchResult(String channelName, String videoName, DateTime uploadDate) {
 
         this.channelName = channelName;
         this.videoName = videoName;
@@ -29,11 +31,11 @@ public class VideoSearchResult {
         this.videoName = videoName;
     }
 
-    public String getUploadDate() {
+    public DateTime getUploadDate() {
         return uploadDate;
     }
 
-    public void setUploadDate(String uploadDate) {
+    public void setUploadDate(DateTime uploadDate) {
         this.uploadDate = uploadDate;
     }
 

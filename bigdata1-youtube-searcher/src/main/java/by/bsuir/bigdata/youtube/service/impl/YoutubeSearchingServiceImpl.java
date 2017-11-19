@@ -57,7 +57,7 @@ public class YoutubeSearchingServiceImpl implements YoutubeSearchingService {
             return request.execute().getItems().stream().map(video ->
                     new VideoSearchResult(video.getSnippet().getChannelTitle(),
                             video.getSnippet().getTitle(),
-                            video.getSnippet().getPublishedAt().toString()))
+                            video.getSnippet().getPublishedAt()))
                     .collect(Collectors.toList());
         } catch (IOException e) {
             throw new YoutubeException("Error while retrieving most popular videos", e);
