@@ -36,4 +36,13 @@ public class VideoSearchResult {
     public void setUploadDate(String uploadDate) {
         this.uploadDate = uploadDate;
     }
+
+    @Override
+    public String toString() {
+        return "VideoSearchResult{" +
+                "channelName='" + channelName + '\'' +
+                ", videoName='" + videoName + '\'' +
+                ", uploadDate='" + uploadDate + '\'' +
+                '}';
+    }
 }
