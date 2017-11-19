@@ -28,7 +28,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @Configuration
-public class YoutubeSecurityConfiguration {
+public class YoutubeAccessorBeanConfiguration {
 
     //TODO: deal with application.properties injection
 //    @Value("${youtube.datastore.credentials.filename}")
