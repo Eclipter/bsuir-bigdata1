@@ -14,6 +14,7 @@ import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.YouTubeScopes;
 import com.google.api.services.youtubeAnalytics.YouTubeAnalytics;
+import com.google.api.services.youtubeAnalytics.YouTubeAnalyticsScopes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -47,7 +48,8 @@ public class YoutubeSecurityConfiguration {
     @Autowired
     private ResourceLoader resourceLoader;
 
-    private List<String> youtubeScopes = Arrays.asList(YouTubeScopes.YOUTUBE_READONLY);
+    private List<String> youtubeScopes = Arrays.asList(YouTubeScopes.YOUTUBE_READONLY,
+            YouTubeAnalyticsScopes.YOUTUBE_READONLY);
 
     @Bean
     public YouTube youTubeAccessor() {
