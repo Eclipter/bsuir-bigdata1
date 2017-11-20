@@ -1,4 +1,5 @@
 rootProject.name = 'bigdata1'
 include 'bigdata1-youtube-searcher'
 include 'bigdata1-container'
+include 'bigdata1-aggregator'
 
