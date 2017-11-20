@@ -1,5 +1,6 @@
 package by.bsuir.bigdata.job;
 
+import by.bsuir.bigdata.aggregation.service.HadoopAggregationService;
 import by.bsuir.bigdata.exception.BigDataServiceException;
 import by.bsuir.bigdata.youtube.model.VideoSearchResult;
 import by.bsuir.bigdata.youtube.service.YoutubeSearchingService;
@@ -29,6 +30,9 @@ public class BigDataSearchingJob {
 
     @Autowired
     private YoutubeSearchingService youtubeSearchingService;
+
+    @Autowired
+    private HadoopAggregationService aggregationService;
 
 
     public void reportCurrentTime() {
@@ -88,6 +92,8 @@ public class BigDataSearchingJob {
                 throw new BigDataServiceException("Error while aggregating results", e);
             }
         });
+
+        aggregationService.aggregate(DOWNLOAD_PATH + "input/", DOWNLOAD_PATH + "output/");
 
         LOG.info("Operation completed successfully");
     }

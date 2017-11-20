@@ -2,6 +2,7 @@ group = group
 version = version
 
 apply plugin: 'java'
+apply plugin: 'idea'
 
 sourceCompatibility = 1.8
 

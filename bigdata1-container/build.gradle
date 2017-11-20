@@ -28,6 +28,7 @@ dependencies {
     compile group: 'org.springframework.boot', name: 'spring-boot-starter'
 
     compile project(':bigdata1-youtube-searcher')
+    compile project(':bigdata1-aggregator')
 
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
