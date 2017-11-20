@@ -16,7 +16,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,7 +26,9 @@ import java.util.stream.Collectors;
 public class BigDataSearchingJob {
 
     private static final Logger LOG = LoggerFactory.getLogger(BigDataSearchingJob.class);
-    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("HH:mm:ss");
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH-mm-ss.SSS");
+    private static final DateTimeFormatter ENAHANCED_DATE_TIME_FORMAT =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH-mm-ss.SSS");
     private static final String DOWNLOAD_PATH = System.getProperty("user.home") + "/youtube_download/";
 
     @Autowired
@@ -86,7 +89,8 @@ public class BigDataSearchingJob {
                     .collect(Collectors.toList());
 
             try {
-                Path path = Paths.get(DOWNLOAD_PATH + "input/input" + LocalDateTime.now() + ".txt");
+                Path path = Paths.get(DOWNLOAD_PATH + "input/input" +
+                        ZonedDateTime.now().format(ENAHANCED_DATE_TIME_FORMAT) + ".txt");
                 Files.write(path, searchResults, StandardOpenOption.CREATE);
             } catch (IOException e) {
                 throw new BigDataServiceException("Error while aggregating results", e);
