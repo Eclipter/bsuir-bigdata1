@@ -15,10 +15,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,8 +24,7 @@ import java.util.stream.Collectors;
 public class BigDataSearchingJob {
 
     private static final Logger LOG = LoggerFactory.getLogger(BigDataSearchingJob.class);
-    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH-mm-ss.SSS");
-    private static final DateTimeFormatter ENAHANCED_DATE_TIME_FORMAT =
+    private static final DateTimeFormatter DATE_TIME_FORMAT =
             DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH-mm-ss.SSS");
     private static final String DOWNLOAD_PATH = System.getProperty("user.home") + "/youtube_download/";
     private static final String TARGET_REGION_CODE = "RU";
@@ -40,7 +37,7 @@ public class BigDataSearchingJob {
 
 
     public void reportCurrentTime() {
-        LOG.info("The time is now {}", DATE_FORMAT.format(new Date()));
+        LOG.info("The time is now {}", ZonedDateTime.now().format(DATE_TIME_FORMAT));
     }
 
 
@@ -108,7 +105,7 @@ public class BigDataSearchingJob {
     private void writeToFile(List<String> strings) {
         try {
             Path path = Paths.get(DOWNLOAD_PATH + "input/input" +
-                    ZonedDateTime.now().format(ENAHANCED_DATE_TIME_FORMAT) + ".txt");
+                    ZonedDateTime.now().format(DATE_TIME_FORMAT) + ".txt");
             Files.write(path, strings, StandardOpenOption.CREATE);
         } catch (IOException e) {
             throw new BigDataServiceException("Error while aggregating results", e);
