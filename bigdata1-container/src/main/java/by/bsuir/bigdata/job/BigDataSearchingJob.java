@@ -25,7 +25,7 @@ public class BigDataSearchingJob {
 
     private static final Logger LOG = LoggerFactory.getLogger(BigDataSearchingJob.class);
     private static final DateTimeFormatter DATE_TIME_FORMAT =
-            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH-mm-ss.SSS");
+            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH-mm-ss-SSS");
     private static final String DOWNLOAD_PATH = System.getProperty("user.home") + "/youtube_download/";
     private static final String TARGET_REGION_CODE = "RU";
 
@@ -74,7 +74,9 @@ public class BigDataSearchingJob {
 
     @Scheduled(fixedRate = 300000)
     public void searchHipers() {
-        LOG.info("Retrieving most popular videos");
+        LOG.info("Retrieving most popular videos for a region");
+
+        final String folderPrefix = ZonedDateTime.now().format(DATE_TIME_FORMAT);
 
         List<VideoSearchResult> videoSearchResults = youtubeSearchingService.searchMostPopular(TARGET_REGION_CODE);
 
@@ -86,12 +88,13 @@ public class BigDataSearchingJob {
                     .searchRelated(videoSearchResult.getVideoName(), videoSearchResult.getChannelName(),
                             videoSearchResult.getUploadDate()));
 
-            writeToFile(searchResults);
+            writeToFile(searchResults, folderPrefix);
         });
 
         LOG.info("Aggregating channels");
 
-        aggregationService.aggregate(DOWNLOAD_PATH + "input/", DOWNLOAD_PATH + "output/");
+        aggregationService.aggregate(DOWNLOAD_PATH + "input/" + folderPrefix + "/",
+                DOWNLOAD_PATH + "output/" + folderPrefix + "/");
 
         LOG.info("Operation completed successfully");
     }
@@ -102,17 +105,17 @@ public class BigDataSearchingJob {
                 .collect(Collectors.toList());
     }
 
-    private void writeToFile(List<String> strings) {
+    private void writeToFile(List<String> strings, String folderPrefix) {
         try {
-            Path path = Paths.get(DOWNLOAD_PATH + "input/input" +
+
+            Path path = Paths.get(DOWNLOAD_PATH + "input/" + folderPrefix + "/input" +
                     ZonedDateTime.now().format(DATE_TIME_FORMAT) + ".txt");
+            if(!Files.exists(path.getParent())) {
+                Files.createDirectory(path.getParent());
+            }
             Files.write(path, strings, StandardOpenOption.CREATE);
         } catch (IOException e) {
             throw new BigDataServiceException("Error while aggregating results", e);
         }
-    }
-
-    private void cleanup() {
-
     }
 }
