@@ -77,28 +77,44 @@ public class BigDataSearchingJob {
     @Scheduled(fixedRate = 300000)
     public void searchHipers() {
         LOG.info("Retrieving most popular videos");
+
         List<VideoSearchResult> videoSearchResults = youtubeSearchingService.searchMostPopular();
 
         LOG.info("Retrieving hipers for channels");
-        videoSearchResults.stream().forEach(videoSearchResult -> {
-            List<String> searchResults = youtubeSearchingService
-                    .searchRelated(videoSearchResult.getVideoName(), videoSearchResult.getChannelName(),
-                            videoSearchResult.getUploadDate())
-                    .stream()
-                    .map(VideoSearchResult::getChannelName)
-                    .collect(Collectors.toList());
 
-            try {
-                Path path = Paths.get(DOWNLOAD_PATH + "input/input" +
-                        ZonedDateTime.now().format(ENAHANCED_DATE_TIME_FORMAT) + ".txt");
-                Files.write(path, searchResults, StandardOpenOption.CREATE);
-            } catch (IOException e) {
-                throw new BigDataServiceException("Error while aggregating results", e);
-            }
+        videoSearchResults.forEach(videoSearchResult -> {
+
+            List<String> searchResults = retrieveChannelNames(youtubeSearchingService
+                    .searchRelated(videoSearchResult.getVideoName(), videoSearchResult.getChannelName(),
+                            videoSearchResult.getUploadDate()));
+
+            writeToFile(searchResults);
         });
+
+        LOG.info("Aggregating channels");
 
         aggregationService.aggregate(DOWNLOAD_PATH + "input/", DOWNLOAD_PATH + "output/");
 
         LOG.info("Operation completed successfully");
+    }
+
+    private List<String> retrieveChannelNames(List<VideoSearchResult> videoSearchResults) {
+        return videoSearchResults.stream()
+                .map(VideoSearchResult::getChannelName)
+                .collect(Collectors.toList());
+    }
+
+    private void writeToFile(List<String> strings) {
+        try {
+            Path path = Paths.get(DOWNLOAD_PATH + "input/input" +
+                    ZonedDateTime.now().format(ENAHANCED_DATE_TIME_FORMAT) + ".txt");
+            Files.write(path, strings, StandardOpenOption.CREATE);
+        } catch (IOException e) {
+            throw new BigDataServiceException("Error while aggregating results", e);
+        }
+    }
+
+    private void cleanup() {
+        
     }
 }
