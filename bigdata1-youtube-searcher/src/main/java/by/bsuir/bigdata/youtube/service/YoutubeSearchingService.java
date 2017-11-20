@@ -9,7 +9,7 @@ public interface YoutubeSearchingService {
 
     String simpleSearch();
 
-    List<VideoSearchResult> searchMostPopular();
+    List<VideoSearchResult> searchMostPopular(String regionCode);
 
     List<VideoSearchResult> searchRelated(String videoTitle, String uploaderName, DateTime effectiveDate);
 }

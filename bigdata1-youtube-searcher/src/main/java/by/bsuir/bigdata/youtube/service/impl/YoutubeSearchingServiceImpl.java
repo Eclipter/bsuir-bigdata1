@@ -19,7 +19,6 @@ import java.util.stream.Collectors;
 public class YoutubeSearchingServiceImpl implements YoutubeSearchingService {
 
     private static final Long MAX_SEARCH_RESULTS = 50L;
-    private static final String TARGET_REGION_CODE = "RU";
 
     @Autowired
     private YouTube youTubeDataAccessor;
@@ -47,12 +46,12 @@ public class YoutubeSearchingServiceImpl implements YoutubeSearchingService {
     }
 
     @Override
-    public List<VideoSearchResult> searchMostPopular() {
+    public List<VideoSearchResult> searchMostPopular(String regionCode) {
         try {
             YouTube.Videos.List request = youTubeDataAccessor.videos().list("snippet");
             request.setChart("mostPopular");
             request.setMaxResults(MAX_SEARCH_RESULTS);
-            request.setRegionCode(TARGET_REGION_CODE);
+            request.setRegionCode(regionCode);
 
             return request.execute().getItems().stream().map(video ->
                     new VideoSearchResult(video.getSnippet().getChannelTitle(),

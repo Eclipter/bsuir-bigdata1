@@ -30,6 +30,7 @@ public class BigDataSearchingJob {
     private static final DateTimeFormatter ENAHANCED_DATE_TIME_FORMAT =
             DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH-mm-ss.SSS");
     private static final String DOWNLOAD_PATH = System.getProperty("user.home") + "/youtube_download/";
+    private static final String TARGET_REGION_CODE = "RU";
 
     @Autowired
     private YoutubeSearchingService youtubeSearchingService;
@@ -44,7 +45,7 @@ public class BigDataSearchingJob {
 
 
     public void writeStatistics() {
-        List<VideoSearchResult> videoSearchResults = youtubeSearchingService.searchMostPopular();
+        List<VideoSearchResult> videoSearchResults = youtubeSearchingService.searchMostPopular(TARGET_REGION_CODE);
         LOG.info("Successfully downloaded the results");
 
         try {
@@ -78,7 +79,7 @@ public class BigDataSearchingJob {
     public void searchHipers() {
         LOG.info("Retrieving most popular videos");
 
-        List<VideoSearchResult> videoSearchResults = youtubeSearchingService.searchMostPopular();
+        List<VideoSearchResult> videoSearchResults = youtubeSearchingService.searchMostPopular(TARGET_REGION_CODE);
 
         LOG.info("Retrieving hipers for channels");
 
@@ -115,6 +116,6 @@ public class BigDataSearchingJob {
     }
 
     private void cleanup() {
-        
+
     }
 }
