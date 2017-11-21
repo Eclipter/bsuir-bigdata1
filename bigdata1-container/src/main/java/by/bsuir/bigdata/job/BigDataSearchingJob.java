@@ -7,6 +7,7 @@ import by.bsuir.bigdata.youtube.service.YoutubeSearchingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -24,10 +25,13 @@ import java.util.stream.Collectors;
 public class BigDataSearchingJob {
 
     private static final Logger LOG = LoggerFactory.getLogger(BigDataSearchingJob.class);
+
     private static final DateTimeFormatter DATE_TIME_FORMAT =
             DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH-mm-ss-SSS");
     private static final String DOWNLOAD_PATH = System.getProperty("user.home") + "/youtube_download/";
-    private static final String TARGET_REGION_CODE = "RU";
+
+    @Value("${country.codes}")
+    private String[] regionCodes;
 
     @Autowired
     private YoutubeSearchingService youtubeSearchingService;
@@ -40,63 +44,73 @@ public class BigDataSearchingJob {
         LOG.info("The time is now {}", ZonedDateTime.now().format(DATE_TIME_FORMAT));
     }
 
-
+//    @Scheduled(fixedRate = 300000)
     public void writeStatistics() {
-        List<VideoSearchResult> videoSearchResults = youtubeSearchingService.searchMostPopular(TARGET_REGION_CODE);
-        LOG.info("Successfully downloaded the results");
 
-        try {
-            final PrintWriter fileWriter =
-                    new PrintWriter(new BufferedOutputStream(
-                            new FileOutputStream(new File(DOWNLOAD_PATH + "input.txt"))));
+        for(String regionCode : regionCodes) {
 
-            videoSearchResults.stream().forEach(videoSearchResult -> {
-                List<VideoSearchResult> searchResults = youtubeSearchingService
-                        .searchRelated(videoSearchResult.getVideoName(), videoSearchResult.getChannelName(),
-                                videoSearchResult.getUploadDate());
+            LOG.info("Retrieving most popular videos for a region: {}", regionCode);
 
-                fileWriter.println("Channel: " + videoSearchResult.getChannelName() + ", Video: " +
-                        videoSearchResult.getVideoName());
+            List<VideoSearchResult> videoSearchResults = youtubeSearchingService.searchMostPopular(regionCode);
+            LOG.info("Successfully downloaded the results");
 
-                searchResults.forEach(result -> {
-                    fileWriter.println(result.getChannelName() + "; " + result.getVideoName());
+            try {
+                final PrintWriter fileWriter =
+                        new PrintWriter(new BufferedOutputStream(
+                                new FileOutputStream(new File(DOWNLOAD_PATH + "input.txt"))));
+
+                videoSearchResults.stream().forEach(videoSearchResult -> {
+                    List<VideoSearchResult> searchResults = youtubeSearchingService
+                            .searchRelated(videoSearchResult.getVideoName(), videoSearchResult.getChannelName(),
+                                    videoSearchResult.getUploadDate());
+
+                    fileWriter.println("Channel: " + videoSearchResult.getChannelName() + ", Video: " +
+                            videoSearchResult.getVideoName());
+
+                    searchResults.forEach(result -> {
+                        fileWriter.println(result.getChannelName() + "; " + result.getVideoName());
+                    });
+                    fileWriter.println();
                 });
-                fileWriter.println();
-            });
 
-            fileWriter.close();
+                fileWriter.close();
 
-            LOG.info("Successfully aggregated the results");
-        } catch (FileNotFoundException e) {
-            throw new BigDataServiceException("Error while aggregating search results", e);
+                LOG.info("Successfully aggregated the results");
+            } catch (FileNotFoundException e) {
+                throw new BigDataServiceException("Error while aggregating search results", e);
+            }
         }
     }
 
     @Scheduled(fixedRate = 300000)
     public void searchHipers() {
-        LOG.info("Retrieving most popular videos for a region");
 
-        final String folderPrefix = ZonedDateTime.now().format(DATE_TIME_FORMAT);
+        for(String regionCode : regionCodes) {
 
-        List<VideoSearchResult> videoSearchResults = youtubeSearchingService.searchMostPopular(TARGET_REGION_CODE);
+            LOG.info("Retrieving most popular videos for a region: {}", regionCode);
 
-        LOG.info("Retrieving hipers for channels");
+            final String folderPrefix = ZonedDateTime.now().format(DATE_TIME_FORMAT);
 
-        videoSearchResults.forEach(videoSearchResult -> {
+            List<VideoSearchResult> videoSearchResults = youtubeSearchingService.searchMostPopular(regionCode);
 
-            List<String> searchResults = retrieveChannelNames(youtubeSearchingService
-                    .searchRelated(videoSearchResult.getVideoName(), videoSearchResult.getChannelName(),
-                            videoSearchResult.getUploadDate()));
+            LOG.info("Retrieving hipers for channels");
 
-            writeToFile(searchResults, folderPrefix);
-        });
+            videoSearchResults.forEach(videoSearchResult -> {
 
-        LOG.info("Aggregating channels");
+                List<String> searchResults = retrieveChannelNames(youtubeSearchingService
+                        .searchRelated(videoSearchResult.getVideoName(), videoSearchResult.getChannelName(),
+                                videoSearchResult.getUploadDate()));
 
-        aggregationService.aggregate(DOWNLOAD_PATH + "input/" + folderPrefix + "/",
-                DOWNLOAD_PATH + "output/" + folderPrefix + "/");
+                writeToFile(searchResults, folderPrefix);
+            });
 
-        LOG.info("Operation completed successfully");
+            LOG.info("Aggregating channels");
+
+            aggregationService.aggregate(DOWNLOAD_PATH + "input/" + folderPrefix + "/",
+                    DOWNLOAD_PATH + "output/" + folderPrefix + "/");
+
+            LOG.info("Operation completed successfully");
+        }
     }
 
     private List<String> retrieveChannelNames(List<VideoSearchResult> videoSearchResults) {
