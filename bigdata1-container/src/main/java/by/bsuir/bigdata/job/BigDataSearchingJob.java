@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -39,6 +40,17 @@ public class BigDataSearchingJob {
     @Autowired
     private HadoopAggregationService aggregationService;
 
+    @PostConstruct
+    public void setupDirectories() {
+        Path path = Paths.get(DOWNLOAD_PATH + "input");
+        if (!Files.exists(path)) {
+            try {
+                Files.createDirectories(path);
+            } catch (IOException e) {
+                throw new BigDataServiceException("Failed to setup directories", e);
+            }
+        }
+    }
 
     public void reportCurrentTime() {
         LOG.info("The time is now {}", ZonedDateTime.now().format(DATE_TIME_FORMAT));
