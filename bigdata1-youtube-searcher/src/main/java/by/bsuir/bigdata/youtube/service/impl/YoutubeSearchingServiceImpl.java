@@ -67,13 +67,15 @@ public class YoutubeSearchingServiceImpl implements YoutubeSearchingService {
     public List<VideoSearchResult> searchRelated(String videoTitle, String uploaderName, DateTime effectiveDate) {
         try {
             YouTube.Search.List request = youTubeDataAccessor.search().list("snippet");
-            request.setQ(videoTitle + " -" + uploaderName);
+            request.setQ(videoTitle);
             request.setType("video");
             request.setOrder("date");
             request.setPublishedAfter(effectiveDate);
             request.setMaxResults(MAX_SEARCH_RESULTS);
 
-            return request.execute().getItems().stream().map(video ->
+            return request.execute().getItems().stream()
+                    .filter(result -> !result.getSnippet().getChannelTitle().equals(uploaderName))
+                    .map(video ->
                     new VideoSearchResult(video.getSnippet().getChannelTitle(),
                             video.getSnippet().getTitle(),
                             video.getSnippet().getPublishedAt()))
